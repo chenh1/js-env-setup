@@ -13,7 +13,7 @@
   "main": "",
   "scripts": {
     "prestart": "babel-node buildScripts/startMessage.js",
-    "start": "npm-run-all --parallel security-check open:src lint:watch",
+    "start": "npm-run-all --parallel security-check open:src lint:watch test:watch start-mockapi",
     "open:src": "babel-node buildScripts/srcServer.js",
     "lint": "esw webpack.config.* src buildScripts --color",
     "lint:watch": "npm run lint -- --watch",
@@ -21,7 +21,15 @@
     "localtunnel": "lt --port 3000",
     "share": "npm-run-all --parallel open:src localtunnel",
     "test": "mocha --reporter progress buildScripts/testSetup.js \"src/**/*.test.js\"",
-    "test:watch": "npm run test -- --watch"
+    "test:watch": "npm run test -- --watch",
+    "generate-mock-data": "babel-node buildScripts/generateMockData",
+    "prestart-mockapi": "npm run generate-mock-data",
+    "start-mockapi": "json-server --watch src/api/db.json --port 3001",
+    "clean-dist": "rimraf ./dist && mkdir dist",
+    "prebuild": "npm-run-all clean-dist test lint",
+    "build": "babel-node buildScripts/build.js",
+    "postbuild": "babel-node buildScripts/distServer.js",
+    "deploy": "surge ./dist"
   },
   "author": "",
   "license": "ISC",
@@ -33,16 +41,25 @@
     "babel-preset-latest": "^6.16.0",
     "babel-register": "^6.18.0",
     "chai": "^3.5.0",
+    "compression": "^1.6.2",
     "css-loader": "^0.26.1",
     "eslint": "^3.11.1",
     "eslint-plugin-import": "^2.2.0",
     "eslint-watch": "^2.1.14",
+    "extract-text-webpack-plugin": "^1.0.1",
+    "html-webpack-plugin": "^2.24.1",
     "jsdom": "^9.8.3",
+    "json-schema-faker": "^0.4.0",
+    "json-server": "^0.9.4",
     "mocha": "^3.2.0",
     "numeral": "^1.5.6",
     "open": "0.0.5",
+    "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
+    "surge": "^0.18.0",
     "webpack": "^1.13.3",
-    "webpack-dev-middleware": "^1.8.4"
+    "webpack-dev-middleware": "^1.8.4",
+    "webpack-md5-hash": "0.0.5",
+    "whatwg-fetch": "^2.0.1"
   }
 }
